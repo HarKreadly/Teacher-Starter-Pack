@@ -5,6 +5,7 @@ const SettingsContext = createContext();
 export const useSettings = () => useContext(SettingsContext);
 
 export const SettingsProvider = ({ children }) => {
+  // --- Persistent States ---
   const [cursorEnabled, setCursorEnabled] = useState(() => {
     const saved = localStorage.getItem("harkreadly_cursor");
     return saved !== null ? JSON.parse(saved) : true;
@@ -22,7 +23,7 @@ export const SettingsProvider = ({ children }) => {
 
   const [floatingParticles, setFloatingParticles] = useState(() => {
     const saved = localStorage.getItem("harkreadly_particles");
-    return saved !== null ? JSON.parse(saved) : true; 
+    return saved !== null ? JSON.parse(saved) : true; // Default to true now
   });
 
   const [scanlines, setScanlines] = useState(() => {
@@ -55,6 +56,7 @@ export const SettingsProvider = ({ children }) => {
     return saved !== null ? saved : "md";
   });
 
+  // --- Persistence Effect ---
   useEffect(() => {
     localStorage.setItem("harkreadly_cursor", JSON.stringify(cursorEnabled));
     localStorage.setItem("harkreadly_animations", JSON.stringify(animationsEnabled));

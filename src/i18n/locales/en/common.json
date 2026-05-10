@@ -1,0 +1,72 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "skills": "Skills",
+    "projects": "Projects",
+    "contact": "Contact"
+  },
+  "hero": {
+    "greeting": "Hi, I'm",
+    "title": "Full Stack Developer",
+    "subtitle": "I create beautiful, functional, and user-centered digital experiences.",
+    "cta": {
+      "viewWork": "View My Work",
+      "getInTouch": "Get In Touch"
+    },
+    "scroll": "Scroll Down"
+  },
+  "about": {
+    "title": "About Me",
+    "description": "I'm a passionate full stack developer with experience in modern web technologies. I love creating digital solutions that make a difference and enjoy working with teams to bring ideas to life.",
+    "stats": {
+      "years": "Years of Experience",
+      "projects": "Projects Completed",
+      "clients": "Happy Clients"
+    }
+  },
+  "skills": {
+    "title": "Skills & Technologies",
+    "categories": {
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "tools": "Tools & Others"
+    }
+  },
+  "projects": {
+    "title": "Featured Projects",
+    "filter": "Filter by:",
+    "all": "All",
+    "web": "Web Apps",
+    "mobile": "Mobile",
+    "viewProject": "View Project",
+    "viewCode": "View Code"
+  },
+  "contact": {
+    "title": "Get In Touch",
+    "subtitle": "Have a project in mind? Let's talk!",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "send": "Send Message",
+      "sending": "Sending...",
+      "success": "Message sent successfully!",
+      "error": "Failed to send message. Please try again."
+    }
+  },
+  "footer": {
+    "builtWith": "Built with React & Tailwind CSS",
+    "copyright": "© 2024 Your Name. All rights reserved."
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "en": "English",
+    "es": "Español",
+    "fr": "French"
+  }
+}

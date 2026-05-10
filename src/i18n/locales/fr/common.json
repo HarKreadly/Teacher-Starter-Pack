@@ -1,0 +1,72 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "skills": "Compétences",
+    "projects": "Projets",
+    "contact": "Contact"
+  },
+  "hero": {
+    "greeting": "Bonjour, je suis",
+    "title": "Développeur Full Stack",
+    "subtitle": "Je crée des expériences numériques belles, fonctionnelles et centrées sur l'utilisateur.",
+    "cta": {
+      "viewWork": "Voir mon travail",
+      "getInTouch": "Me contacter"
+    },
+    "scroll": "Défiler vers le bas"
+  },
+  "about": {
+    "title": "À propos de moi",
+    "description": "Je suis un développeur full stack passionné avec de l'expérience dans les technologies web modernes. J'aime créer des solutions numériques qui font la différence et travailler en équipe pour donner vie aux idées.",
+    "stats": {
+      "years": "Années d'expérience",
+      "projects": "Projets terminés",
+      "clients": "Clients satisfaits"
+    }
+  },
+  "skills": {
+    "title": "Compétences & Technologies",
+    "categories": {
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "tools": "Outils & Autres"
+    }
+  },
+  "projects": {
+    "title": "Projets en vedette",
+    "filter": "Filtrer par :",
+    "all": "Tous",
+    "web": "Applications Web",
+    "mobile": "Mobile",
+    "viewProject": "Voir le projet",
+    "viewCode": "Voir le code"
+  },
+  "contact": {
+    "title": "Me contacter",
+    "subtitle": "Vous avez un projet en tête ? Parlons-en !",
+    "form": {
+      "name": "Nom",
+      "email": "Email",
+      "message": "Message",
+      "send": "Envoyer le message",
+      "sending": "Envoi en cours...",
+      "success": "Message envoyé avec succès !",
+      "error": "Échec de l'envoi du message. Veuillez réessayer."
+    }
+  },
+  "footer": {
+    "builtWith": "Construit avec React & Tailwind CSS",
+    "copyright": "© 2024 Votre Nom. Tous droits réservés."
+  },
+  "theme": {
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
+  },
+  "language": {
+    "en": "Anglais",
+    "es": "Espagnol",
+    "fr": "Français"
+  }
+}

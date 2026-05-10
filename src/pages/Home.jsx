@@ -1,137 +1,183 @@
-import { Link } from 'react-router-dom';
-import { FiArrowRight, FiSearch, FiBook, FiActivity, FiEdit, FiFileText } from 'react-icons/fi';
-import SplitText from '../components/common/SplitText';
-import { motion } from 'framer-motion';
-
-const features = [
-  { name: 'Lesson Plans', icon: FiBook, path: '/lesson-plans', description: 'Comprehensive guides for your next class.' },
-  { name: 'Warm-Ups', icon: FiActivity, path: '/warm-ups', description: 'Engaging activities to start the day right.' },
-  { name: 'Exercises', icon: FiEdit, path: '/exercises', description: 'Practice materials for all levels.' },
-  { name: 'Assessments', icon: FiFileText, path: '/assessments', description: 'Quizzes and tests to measure progress.' },
-];
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-      delayChildren: 0.3
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } }
-};
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, Sun, Moon, Linkedin, Instagram, Github } from "lucide-react";
+import { useTheme } from "next-themes";
+import LanguageSelector from "../components/common/LanguageSelector";
+import HeroControls from "../components/features/Hero/HeroControls";
+import HeroCarousel from "../components/features/Hero/HeroCarousel";
+import HeroInfo from "../components/features/Hero/HeroInfo";
+import { useSettings } from "../context/SettingsContext";
+import MenuModal from "../components/layout/MenuModal";
+import { slides } from "../data/heroSlides";
 
 const Home = () => {
-  return (
-    <div className="relative w-full min-h-screen bg-background text-foreground overflow-hidden font-sans transition-colors duration-1000">
-      
-      {/* Cinematic Layer 1: Abstract Gradient Blur */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.7 }}
-        transition={{ duration: 1 }}
-        className="absolute inset-0 z-0 pointer-events-none"
-      >
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-muted to-background dark:from-zinc-900/50 dark:to-background rounded-full blur-3xl" style={{ willChange: "transform, opacity" }}></div>
-      </motion.div>
+  const { fontSize, setFontSize, autoPlaySpeed, setAutoPlaySpeed } =
+    useSettings();
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentQuote, setCurrentQuote] = useState(0);
+  const [dateTime, setDateTime] = useState(new Date());
+  const [isCVModalOpen, setIsCVModalOpen] = useState(false);
+  const [isMenuModalOpen, setIsMenuModal] = useState(false);
+  
+  const { theme, setTheme } = useTheme();
 
-      {/* Layer 3: Vignette Effect */}
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setDateTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Auto-play for carousel
+  useEffect(() => {
+    const slideTimer = setInterval(() => {
+      nextSlide();
+    }, autoPlaySpeed);
+    return () => clearInterval(slideTimer);
+  }, [currentSlide, autoPlaySpeed]);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
+  const nextQuote = () => {
+    setCurrentQuote((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevQuote = () => {
+    setCurrentQuote((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
+  return (
+    <div className="relative w-full min-h-dvh bg-gray-50 dark:bg-black text-gray-900 dark:text-white overflow-hidden font-serif transition-colors duration-1000 -mt-[100px]">
+      {/* Layer 0: Full Screen Background Image */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentSlide}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1 }}
+          className="absolute inset-0 z-0"
+        >
+          <img
+            src={slides[currentSlide].image}
+            alt="Background"
+            className="w-full h-full object-cover opacity-30 dark:opacity-60 transition-opacity duration-500"
+          />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Layer 1: Blur Overlay */}
+      <div className="absolute inset-0 z-0 backdrop-blur-2xl bg-white/40 dark:bg-black/40 transition-colors duration-500"></div>
+
+      {/* Layer 2: Dark Vignette */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(255,255,255,0.4)_100%)] dark:bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,1)_100%)] pointer-events-none transition-all duration-500"></div>
 
-      {/* Main Content */}
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="relative z-10 grid grid-cols-1 min-h-screen pt-32 pb-10 px-4 md:px-8 lg:px-16 items-center"
-      >
-        
-        <div className="text-center max-w-4xl mx-auto">
-          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted text-muted-foreground text-sm font-medium mb-8 border border-border shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-            New cinematic features released!
-          </motion.div>
-          
-          <motion.div variants={itemVariants} className="mb-8">
-            <SplitText 
-              text="The Modern Toolset for" 
-              tag="h1" 
-              className="text-5xl md:text-7xl font-extrabold text-foreground tracking-tight block"
-            />
-            <SplitText 
-              text="Exceptional Educators" 
-              tag="span" 
-              delay={300}
-              className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-muted-foreground to-foreground tracking-tight block mt-2"
-            />
-          </motion.div>
-          
-          <motion.p variants={itemVariants} className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
-            Discover thousands of metadata-driven lesson plans, warm-ups, and assessments. Now with a beautifully cinematic interface.
-          </motion.p>
-          
-          {/* Main Search Bar in Hero */}
-          <motion.div variants={itemVariants} className="max-w-2xl mx-auto bg-card p-2 rounded-2xl shadow-xl border border-border flex items-center mb-12">
-            <div className="pl-4 text-muted-foreground">
-              <FiSearch size={24} />
-            </div>
-            <input 
-              type="text" 
-              placeholder="Search for 'Present Simple' or '9th Grade'..." 
-              className="flex-grow bg-transparent border-none focus:ring-0 text-foreground px-4 py-3 placeholder-muted-foreground outline-none"
-            />
-            <button className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-medium hover:opacity-90 transition-opacity">
-              Search
-            </button>
-          </motion.div>
-        </div>
-
-      </motion.div>
-
-      {/* Quick Categories */}
-      <section className="relative z-10 py-20 bg-muted/30 border-y border-border">
-        <div className="container mx-auto px-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
+      {/* Header Navigation */}
+      <nav className="absolute top-[100px] left-0 w-full p-4 md:p-8 flex justify-between items-center z-20 text-sm tracking-widest text-gray-400">
+        <div className="flex items-center gap-8">
+          <div
+            className="flex gap-3 items-center cursor-pointer group"
+            onClick={() => setIsMenuModal(true)}
           >
-            <h2 className="text-3xl font-bold text-foreground mb-4">Explore by Category</h2>
-            <p className="text-muted-foreground">Find exactly what you need with our structured resource collections.</p>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, idx) => (
-              <motion.div 
-                key={feature.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1, duration: 0.6 }}
-              >
-                <Link to={feature.path} className="block group bg-card p-8 rounded-2xl border border-border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                  <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center text-foreground mb-6 group-hover:scale-110 transition-transform">
-                    <feature.icon size={24} />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground mb-2">{feature.name}</h3>
-                  <p className="text-muted-foreground mb-6 text-sm">{feature.description}</p>
-                  <div className="flex items-center text-foreground font-medium text-sm group-hover:gap-2 transition-all">
-                    Browse {feature.name} <FiArrowRight className="opacity-0 group-hover:opacity-100 transition-opacity ml-1" />
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+            <div className="p-2 rounded-full bg-gray-100 dark:bg-white/10 group-hover:bg-gray-200 dark:group-hover:bg-white/20 transition-colors">
+              <Menu size={20} className="text-gray-900 dark:text-white" />
+            </div>
+            <span className="text-gray-900 dark:text-white font-sans uppercase text-xs font-bold tracking-widest group-hover:opacity-70 transition-opacity">
+              Menu
+            </span>
+          </div>
+          <div className="h-8 w-px bg-gray-200 dark:bg-white/20"></div>
+          <div
+            className="flex gap-3 items-center cursor-pointer group"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            <div className="p-2 rounded-full bg-gray-100 dark:bg-white/10 group-hover:bg-gray-200 dark:group-hover:bg-white/20 transition-colors">
+              {theme === "dark" ? (
+                <Sun size={20} className="text-white" />
+              ) : (
+                <Moon size={20} className="text-gray-900" />
+              )}
+            </div>
+            <span className="text-gray-900 dark:text-white font-sans uppercase text-xs font-bold tracking-widest group-hover:opacity-70 transition-opacity">
+              Theme
+            </span>
           </div>
         </div>
-      </section>
-      
+        <div className="hidden lg:flex gap-12 font-sans uppercase text-xs font-bold">
+          {[
+            "Home",
+            "Warmups",
+            "Lessons",
+            "Lesson Plans",
+            "Exercises",
+            "Assessments",
+            "Textbooks",
+            "Contact",
+          ].map((item) => (
+            <Link
+              key={item}
+              to={`/${item.toLowerCase()}`}
+              className="hover:text-black dark:hover:text-white transition-colors"
+            >
+              {item.replace("-", " ")}
+            </Link>
+          ))}
+        </div>
+        <div className="flex gap-6 items-center">
+          <LanguageSelector />
+        </div>
+      </nav>
+
+      {/* Main Content Grid */}
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 min-h-dvh pt-40 pb-10 px-4 md:px-8 lg:px-16 gap-8 items-center">
+        <HeroControls
+          currentSlide={currentSlide}
+          currentQuote={currentQuote}
+          nextQuote={nextQuote}
+          prevQuote={prevQuote}
+          dateTime={dateTime}
+          fontSize={fontSize}
+          setFontSize={setFontSize}
+          autoPlaySpeed={autoPlaySpeed}
+          setAutoPlaySpeed={setAutoPlaySpeed}
+          nextSlide={nextSlide}
+          prevSlide={prevSlide}
+        />
+
+        <HeroCarousel
+          currentSlide={currentSlide}
+          nextSlide={nextSlide}
+          prevSlide={prevSlide}
+          setIsCVModalOpen={setIsCVModalOpen}
+          slides={slides}
+        />
+
+        <HeroInfo
+          currentSlide={currentSlide}
+          dateTime={dateTime}
+          fontSize={fontSize}
+          slides={slides}
+        />
+      </div>
+
+      <MenuModal
+        isOpen={isMenuModalOpen}
+        onClose={() => setIsMenuModalOpen(false)}
+      />
     </div>
   );
 };
