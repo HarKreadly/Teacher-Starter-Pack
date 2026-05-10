@@ -24,22 +24,14 @@ const ResourcePage = ({ title, description, filterConfig, resources }) => {
     setSearchQuery('');
   };
 
-  // Basic filtering logic
   const filteredResources = useMemo(() => {
     return resources.filter(resource => {
-      // Search query filter
       if (searchQuery && !resource.title.toLowerCase().includes(searchQuery.toLowerCase()) && !resource.description.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
       }
-      
-      // Category filters
       for (const category in activeFilters) {
         if (activeFilters[category].length > 0) {
-          // If the resource doesn't match ANY of the selected values in this category, filter it out
-          // This requires mapping your generic filter category to resource object properties
-          // For now, we assume simple matching (e.g., resource[category] === value or value in resource.tags)
           const resourceValue = resource[category];
-          
           if (Array.isArray(resourceValue)) {
             const hasMatch = activeFilters[category].some(v => resourceValue.includes(v));
             if (!hasMatch) return false;
@@ -53,22 +45,21 @@ const ResourcePage = ({ title, description, filterConfig, resources }) => {
   }, [resources, activeFilters, searchQuery]);
 
   return (
-    <div className="container mx-auto px-6 py-12">
+    <div className="container mx-auto px-6 py-24 min-h-screen">
       {/* Header section */}
-      <div className="mb-10">
-        <h1 className="text-4xl font-bold text-zinc-900 dark:text-white mb-4">{title}</h1>
-        <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-3xl">{description}</p>
+      <div className="mb-12">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-foreground tracking-tight mb-4">{title}</h1>
+        <p className="text-lg text-muted-foreground max-w-3xl leading-relaxed">{description}</p>
       </div>
 
-      {/* Main content grid */}
       <div className="flex flex-col lg:flex-row gap-8">
         
         {/* Mobile Filters Toggle */}
         <button 
-          className="lg:hidden flex items-center justify-center gap-2 w-full py-3 bg-zinc-100 dark:bg-zinc-800 rounded-xl font-medium text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700"
+          className="lg:hidden flex items-center justify-center gap-2 w-full py-3 bg-card rounded-xl font-bold uppercase tracking-wider text-sm text-foreground border border-border shadow-sm"
           onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
         >
-          <FiSliders /> Filters
+          <FiSliders size={18} /> Filters
         </button>
 
         {/* Sidebar */}
@@ -86,22 +77,22 @@ const ResourcePage = ({ title, description, filterConfig, resources }) => {
           
           {/* Top Bar: Search & Sort */}
           <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-8">
-            <div className="relative w-full md:w-96">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FiSearch className="text-zinc-400" />
+            <div className="relative w-full md:w-[400px]">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <FiSearch size={18} className="text-muted-foreground" />
               </div>
               <input 
                 type="text" 
                 placeholder="Search resources..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-zinc-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white focus:ring-1 focus:ring-zinc-500 focus:border-zinc-500 transition-colors"
+                className="w-full pl-12 pr-4 py-3 border border-border rounded-xl bg-card text-foreground focus:ring-1 focus:ring-primary focus:border-primary transition-colors outline-none shadow-sm font-medium"
               />
             </div>
 
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-zinc-500 dark:text-zinc-400">Sort by:</span>
-              <select className="bg-transparent border-none text-zinc-900 dark:text-white font-medium focus:ring-0 cursor-pointer">
+            <div className="flex items-center gap-3 text-sm">
+              <span className="text-muted-foreground font-bold tracking-widest uppercase text-[10px]">Sort by:</span>
+              <select className="bg-transparent border-none text-foreground font-bold focus:ring-0 cursor-pointer outline-none">
                 <option value="newest">Newest First</option>
                 <option value="popular">Most Popular</option>
                 <option value="rating">Highest Rated</option>
@@ -110,8 +101,8 @@ const ResourcePage = ({ title, description, filterConfig, resources }) => {
           </div>
 
           {/* Results Info */}
-          <div className="mb-6 text-sm text-zinc-500 dark:text-zinc-400">
-            Showing <span className="font-semibold text-zinc-900 dark:text-white">{filteredResources.length}</span> resources
+          <div className="mb-6 text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+            Showing <span className="text-foreground">{filteredResources.length}</span> resources
           </div>
 
           {/* Grid */}
@@ -122,29 +113,16 @@ const ResourcePage = ({ title, description, filterConfig, resources }) => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl">
-              <h3 className="text-lg font-semibold text-zinc-900 dark:text-white mb-2">No resources found</h3>
-              <p className="text-zinc-500 dark:text-zinc-400">Try adjusting your filters or search query.</p>
+            <div className="text-center py-24 bg-card border border-border rounded-2xl shadow-sm">
+              <h3 className="text-xl font-bold text-foreground tracking-tight mb-2">No resources found</h3>
+              <p className="text-muted-foreground mb-6">Try adjusting your filters or search query.</p>
               <button 
                 onClick={handleResetFilters}
-                className="mt-6 px-6 py-2 bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 rounded-lg hover:opacity-90 transition-opacity font-medium"
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity font-bold uppercase tracking-wider text-xs shadow-md"
               >
                 Clear Filters
               </button>
             </div>
-          )}
-
-          {/* Pagination Placeholder */}
-          {filteredResources.length > 0 && (
-             <div className="flex justify-center mt-12">
-               <div className="flex items-center gap-2">
-                  <button className="px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50">Previous</button>
-                  <button className="px-4 py-2 rounded-lg bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 font-medium">1</button>
-                  <button className="px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">2</button>
-                  <button className="px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">3</button>
-                  <button className="px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">Next</button>
-               </div>
-             </div>
           )}
 
         </div>
