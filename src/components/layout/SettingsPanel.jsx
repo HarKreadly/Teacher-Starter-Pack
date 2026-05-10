@@ -1,27 +1,15 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { toggleDarkMode, closeSettingsPanel, setTheme, setGlassMode } from '../../store/slices/settingsSlice';
+import { closeSettingsPanel } from '../../store/slices/settingsSlice';
 import { useEffect } from 'react';
 import { FiX, FiMoon, FiSun } from 'react-icons/fi';
 import { AnimatePresence, motion } from 'framer-motion';
-
-const themes = ['zinc', 'stone', 'amber', 'sweet', 'pink', 'sunrise', 'sunset'];
-
-const glassModes = ['opaque', 'blur', 'acrylic'];
+import { useTheme } from 'next-themes';
 
 const SettingsPanel = () => {
-  const { isSettingsPanelOpen, isDarkMode, theme, glassMode } = useSelector((state) => state.settings);
+  const { isSettingsPanelOpen } = useSelector((state) => state.settings);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    const html = document.documentElement;
-    // Remove all possible themes, dark class, and glass modes
-    html.classList.remove('dark', ...themes, 'glass-opaque', 'glass-blur', 'glass-acrylic');
-    
-    // Add current theme and dark mode
-    if (isDarkMode) html.classList.add('dark');
-    if (theme) html.classList.add(theme);
-    if (glassMode && glassMode !== 'opaque') html.classList.add(`glass-${glassMode}`);
-  }, [isDarkMode, theme, glassMode]);
+  const { theme, setTheme } = useTheme();
+  const isDarkMode = theme === 'dark';
 
   useEffect(() => {
     if (isSettingsPanelOpen) {
@@ -124,82 +112,16 @@ const SettingsPanel = () => {
                 </div>
 
                 <button 
-                  onClick={() => dispatch(toggleDarkMode())}
+                  onClick={() => setTheme(isDarkMode ? 'light' : 'dark')}
                   className={`w-14 h-8 rounded-full transition-colors relative ${isDarkMode ? 'bg-primary' : 'bg-white/20'}`}
                 >
                   <div className={`absolute top-1 left-1 bg-background w-6 h-6 rounded-full transition-transform duration-300 ${isDarkMode ? 'translate-x-6' : 'translate-x-0'}`} />
                 </button>
               </motion.div>
 
-              {/* Theme Selection */}
-              <motion.div
-                initial={{ x: 20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -20, opacity: 0 }}
-                transition={{ delay: 0.5, type: "spring" }}
-                className="flex flex-col gap-4"
-              >
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-50 ml-2">
-                  Cinematic Theme
-                </span>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-                  {themes.map((t, idx) => (
-                    <button
-                      key={t}
-                      onClick={() => dispatch(setTheme(t))}
-                      className={`
-                        relative flex flex-col items-center justify-center p-4 rounded-xl border transition-all duration-300 overflow-hidden group
-                        ${
-                          theme === t 
-                            ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]' 
-                            : 'bg-white/5 text-white/70 border-white/5 hover:bg-white/10 hover:text-white hover:border-white/30'
-                        }
-                      `}
-                    >
-                      <span className="text-sm font-bold uppercase tracking-wider z-10">
-                        {t}
-                      </span>
-                      {/* Active Pip Background Glow */}
-                      {theme === t && (
-                        <div className="absolute inset-0 bg-primary/20 blur-xl" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* Glass Mode Selection */}
-              <motion.div
-                initial={{ x: 20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -20, opacity: 0 }}
-                transition={{ delay: 0.6, type: "spring" }}
-                className="flex flex-col gap-4"
-              >
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-50 ml-2">
-                  Background Effect
-                </span>
-                <div className="grid grid-cols-3 gap-3 sm:gap-4">
-                  {glassModes.map((mode) => (
-                    <button
-                      key={mode}
-                      onClick={() => dispatch(setGlassMode(mode))}
-                      className={`
-                        relative flex flex-col items-center justify-center p-4 rounded-xl border transition-all duration-300 overflow-hidden group
-                        ${
-                          glassMode === mode 
-                            ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]' 
-                            : 'bg-white/5 text-white/70 border-white/5 hover:bg-white/10 hover:text-white hover:border-white/30'
-                        }
-                      `}
-                    >
-                      <span className="text-xs sm:text-sm font-bold uppercase tracking-wider z-10">
-                        {mode}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
+              <div className="text-center text-white/30 text-[10px] uppercase tracking-widest mt-4">
+                Other cinematic themes have been removed to clean up the workspace.
+              </div>
             </div>
 
             {/* Mini Footer */}

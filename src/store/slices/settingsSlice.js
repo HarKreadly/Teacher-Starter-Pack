@@ -16,19 +16,14 @@ const loadState = () => {
 const savedState = loadState();
 
 const initialState = {
-  theme: savedState?.theme || 'zinc',
-  isDarkMode: savedState?.isDarkMode || false,
   isSettingsPanelOpen: false, // Don't persist panel open state
-  glassMode: savedState?.glassMode || 'opaque',
 };
 
 // Helper function to save to localStorage
 const saveState = (state) => {
   try {
     const stateToSave = {
-      theme: state.theme,
-      isDarkMode: state.isDarkMode,
-      glassMode: state.glassMode,
+      // Add other persistent settings here if needed
     };
     localStorage.setItem('warmediaSettings', JSON.stringify(stateToSave));
   } catch (err) {
@@ -40,18 +35,6 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState,
   reducers: {
-    toggleDarkMode: (state) => {
-      state.isDarkMode = !state.isDarkMode;
-      saveState(state);
-    },
-    setTheme: (state, action) => {
-      state.theme = action.payload;
-      saveState(state);
-    },
-    setGlassMode: (state, action) => {
-      state.glassMode = action.payload;
-      saveState(state);
-    },
     toggleSettingsPanel: (state) => {
       state.isSettingsPanelOpen = !state.isSettingsPanelOpen;
     },
@@ -61,5 +44,5 @@ const settingsSlice = createSlice({
   },
 });
 
-export const { toggleDarkMode, setTheme, setGlassMode, toggleSettingsPanel, closeSettingsPanel } = settingsSlice.actions;
+export const { toggleSettingsPanel, closeSettingsPanel } = settingsSlice.actions;
 export default settingsSlice.reducer;
