@@ -80,12 +80,12 @@ const SocialModal = ({ isOpen, onClose }) => {
               initial="closed"
               animate="open"
               exit="closed"
-              className={`absolute inset-0 pointer-events-none ${
+              className={`absolute inset-0 pointer-events-none transition-colors duration-500 ${
                 i === 0
-                  ? "bg-zinc-800"
+                  ? "bg-card"
                   : i === 1
-                  ? "bg-zinc-950"
-                  : "bg-zinc-900"
+                  ? "bg-popover"
+                  : "bg-background"
               } ${i === 0 ? "z-[101]" : i === 1 ? "z-[102]" : "z-[103]"}`}
             />
           ))}
@@ -96,11 +96,11 @@ const SocialModal = ({ isOpen, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ delay: 0.3 }}
-            className="relative z-[110] w-full h-full flex flex-col items-center justify-center p-6 font-sans text-white"
+            className="relative z-[110] w-full h-full flex flex-col items-center justify-center p-6 font-sans text-foreground"
           >
             <button
               onClick={onClose}
-              className="absolute top-0 right-0 p-2 m-8 hover:cursor-pointer bg-white rounded-full text-black hover:text-primary transition-colors z-[120] group"
+              className="absolute top-0 right-0 p-2 m-8 hover:cursor-pointer bg-background text-foreground rounded-full hover:text-primary transition-colors z-[120] group border border-border"
             >
               <FiX
                 size={22}
@@ -110,7 +110,7 @@ const SocialModal = ({ isOpen, onClose }) => {
 
             {/* List */}
             <div className="flex flex-col gap-6 w-full max-w-lg">
-              <span className="m-auto mb-2 text-white/50 uppercase tracking-[0.2em] font-bold text-xs">
+              <span className="m-auto mb-2 text-muted-foreground uppercase tracking-[0.2em] font-bold text-xs">
                 Our Socials
               </span>
               
@@ -132,8 +132,8 @@ const SocialModal = ({ isOpen, onClose }) => {
                       relative flex flex-col overflow-hidden rounded-2xl border transition-all duration-500
                       ${
                         isExpanded
-                          ? "bg-white/10 border-white/30 shadow-2xl"
-                          : "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20"
+                          ? "bg-card border-border shadow-2xl"
+                          : "bg-muted/50 border-transparent hover:bg-muted hover:border-border"
                       }
                     `}
                   >
@@ -150,7 +150,7 @@ const SocialModal = ({ isOpen, onClose }) => {
                           <span className="text-2xl sm:text-3xl font-bold tracking-tighter uppercase">
                             {member.name}
                           </span>
-                          <span className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 text-zinc-300">
+                          <span className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 text-muted-foreground">
                             {member.role}
                           </span>
                         </div>
@@ -159,7 +159,7 @@ const SocialModal = ({ isOpen, onClose }) => {
                       <motion.div
                         animate={{ rotate: isExpanded ? 180 : 0 }}
                         transition={{ duration: 0.3 }}
-                        className={`p-2 rounded-full transition-colors ${isExpanded ? "bg-white text-black" : "bg-white/10 text-white"}`}
+                        className={`p-2 rounded-full transition-colors ${isExpanded ? "bg-foreground text-background" : "bg-muted text-foreground"}`}
                       >
                         <FiChevronDown size={20} />
                       </motion.div>
@@ -173,7 +173,7 @@ const SocialModal = ({ isOpen, onClose }) => {
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.3 }}
-                          className="border-t border-white/10"
+                          className="border-t border-border"
                         >
                           <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {member.socials.map((social) => {
@@ -182,7 +182,7 @@ const SocialModal = ({ isOpen, onClose }) => {
                                 <a
                                   key={social.name}
                                   href={social.url}
-                                  className="flex items-center gap-4 p-4 rounded-xl bg-black/30 hover:bg-white hover:text-black transition-colors group"
+                                  className="flex items-center gap-4 p-4 rounded-xl bg-muted hover:bg-accent hover:text-accent-foreground transition-colors group"
                                 >
                                   <Icon size={20} className="opacity-70 group-hover:opacity-100" />
                                   <span className="font-semibold text-sm uppercase tracking-widest opacity-70 group-hover:opacity-100">
@@ -207,7 +207,7 @@ const SocialModal = ({ isOpen, onClose }) => {
               transition={{ delay: 0.8 }}
               className="absolute bottom-10 flex flex-col items-center gap-2"
             >
-              <span className="text-[8px] font-bold tracking-[0.5em] uppercase text-zinc-500">
+              <span className="text-[8px] font-bold tracking-[0.5em] uppercase text-muted-foreground">
                 Connect & Collaborate
               </span>
             </motion.div>

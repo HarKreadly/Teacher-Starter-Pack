@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FiMenu, FiSettings, FiShare2 } from "react-icons/fi";
 import { FaLinkedin, FaInstagram } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -11,6 +11,7 @@ import LanguageSelector from "../common/LanguageSelector";
 
 const Navbar = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
   const [isSocialModalOpen, setIsSocialModalOpen] = useState(false);
 
@@ -22,30 +23,30 @@ const Navbar = () => {
             className="flex gap-3 items-center cursor-pointer group"
             onClick={() => setIsMenuModalOpen(true)}
           >
-            <div className="p-2 rounded-full bg-muted dark:bg-white/10 group-hover:bg-accent dark:group-hover:bg-white/20 transition-colors">
-              <FiMenu size={20} className="text-foreground dark:text-white" />
+            <div className="p-2 rounded-full bg-muted group-hover:bg-accent transition-colors">
+              <FiMenu size={20} className="text-foreground" />
             </div>
-            <span className="text-foreground dark:text-white font-sans uppercase text-xs font-bold tracking-widest group-hover:opacity-70 transition-opacity">
+            <span className="text-foreground font-sans uppercase text-sm font-bold tracking-widest group-hover:opacity-70 transition-opacity">
               Menu
             </span>
           </div>
 
-          <div className="h-8 w-px bg-border dark:bg-white/20"></div>
+          <div className="h-8 w-px bg-border"></div>
 
           <div
             className="flex gap-3 items-center cursor-pointer group"
             onClick={() => setIsSocialModalOpen(true)}
           >
-            <div className="p-2 rounded-full bg-muted dark:bg-white/10 group-hover:bg-accent dark:group-hover:bg-white/20 transition-colors">
-              <FiShare2 size={20} className="text-foreground dark:text-white" />
+            <div className="p-2 rounded-full bg-muted group-hover:bg-accent transition-colors">
+              <FiShare2 size={20} className="text-foreground" />
             </div>
-            <span className="text-foreground dark:text-white font-sans uppercase text-xs font-bold tracking-widest group-hover:opacity-70 transition-opacity whitespace-nowrap">
+            <span className="text-foreground font-sans uppercase text-sm font-bold tracking-widest group-hover:opacity-70 transition-opacity whitespace-nowrap">
               Social Media
             </span>
           </div>
         </div>
 
-        <div className="hidden lg:flex gap-8 font-sans uppercase text-[10px] font-bold tracking-widest">
+        <div className="hidden lg:flex gap-8 font-sans uppercase text-xs font-bold tracking-widest">
           {[
             "Home",
             "Warmups",
@@ -55,19 +56,20 @@ const Navbar = () => {
             "Assessments",
             "Textbooks",
             "Contact",
-          ].map((item) => (
-            <Link
-              key={item}
-              to={
-                item === "Home"
-                  ? "/"
-                  : `/${item.toLowerCase().replace(" ", "-")}`
-              }
-              className="hover:text-foreground dark:hover:text-white transition-colors whitespace-nowrap"
-            >
-              {item}
-            </Link>
-          ))}
+          ].map((item) => {
+            const path = item === "Home" ? "/" : `/${item.toLowerCase().replace(" ", "-")}`;
+            const isActive = location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
+            
+            return (
+              <Link
+                key={item}
+                to={path}
+                className={`transition-colors whitespace-nowrap ${isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                {item}
+              </Link>
+            );
+          })}
         </div>
 
         <div className="flex gap-4 sm:gap-6 items-center">
@@ -76,14 +78,14 @@ const Navbar = () => {
               className="flex gap-3 items-center cursor-pointer group"
               onClick={() => dispatch(toggleSettingsPanel())}
             >
-              <div className="p-2 rounded-full bg-muted dark:bg-white/10 group-hover:bg-accent dark:group-hover:bg-white/20 transition-colors">
-                <FiSettings size={20} className="text-foreground dark:text-white" />
+              <div className="p-2 rounded-full bg-muted group-hover:bg-accent transition-colors">
+                <FiSettings size={20} className="text-foreground" />
               </div>
-              <span className="text-foreground dark:text-white font-sans uppercase text-xs font-bold tracking-widest group-hover:opacity-70 transition-opacity">
+              <span className="text-foreground font-sans uppercase text-sm font-bold tracking-widest group-hover:opacity-70 transition-opacity">
                 Settings
               </span>
             </div>
-            <div className="w-px h-6 bg-border dark:bg-white/20 mx-4"></div>
+            <div className="w-px h-6 bg-border mx-4"></div>
           </div>
 
           <LanguageSelector />

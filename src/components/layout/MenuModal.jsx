@@ -69,11 +69,11 @@ const MenuModal = ({ isOpen, onClose }) => {
               exit="closed"
               className={`absolute inset-0 pointer-events-none transition-colors duration-500 ${
                 i === 0
-                  ? "bg-zinc-800 dark:bg-zinc-950"
+                  ? "bg-card"
                   : i === 1
-                  ? "bg-zinc-950 dark:bg-zinc-900"
-                  : "bg-zinc-800 dark:bg-zinc-800"
-              } ${i === 0 ? "z-101" : i === 1 ? "z-102" : "z-103"}`}
+                  ? "bg-popover"
+                  : "bg-background"
+              } ${i === 0 ? "z-[101]" : i === 1 ? "z-[102]" : "z-[103]"}`}
               style={{ willChange: "clip-path" }}
             />
           ))}
@@ -196,12 +196,12 @@ const MenuModal = ({ isOpen, onClose }) => {
               <div className="flex gap-6">
                 <a
                   href="#"
-                  className="hover:text-white transition-colors text-black bg-amber-50 rounded-full p-2 hover:bg-zinc-950"
+                  className="text-foreground bg-muted rounded-full p-2 hover:bg-accent hover:text-accent-foreground transition-colors"
                 >
                   <FaGithub size={20} />
                 </a>
               </div>
-              <div className="text-xs text-zinc-50 font-bold tracking-[0.2em] uppercase">
+              <div className="text-xs text-muted-foreground font-bold tracking-[0.2em] uppercase">
                 Warmedia // 2026
               </div>
             </footer>

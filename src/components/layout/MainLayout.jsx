@@ -5,7 +5,7 @@ import SettingsPanel from './SettingsPanel';
 
 const MainLayout = () => {
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-zinc-50 dark:bg-zinc-950 transition-colors duration-300">
+    <div className="min-h-screen flex flex-col font-sans bg-background text-foreground transition-colors duration-300 text-base">
       <Navbar />
       <main className="flex-grow flex flex-col">
         <Outlet />
