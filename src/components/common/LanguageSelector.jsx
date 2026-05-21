@@ -85,7 +85,7 @@ const LanguageSelector = () => {
                   i === 0 ? "bg-[#0a0a0b]" : 
                   i === 1 ? "bg-[#111112]" : 
                   "bg-[#161618]"
-                } ${i === 0 ? "z-[101]" : i === 1 ? "z-[102]" : "z-[103]"}`}
+                } ${i === 0 ? "z-101" : i === 1 ? "z-102" : "z-103"}`}
               />
             ))}
 
@@ -95,7 +95,7 @@ const LanguageSelector = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ delay: 0.3 }}
-              className="relative z-[110] w-full h-full flex flex-col items-center justify-center p-6"
+              className="relative z-110 w-full h-full flex flex-col items-center justify-center p-6 dark:bg-zinc-950 bg-zinc-100"
             >
               {/* Small Header */}
               <motion.div 
@@ -110,9 +110,9 @@ const LanguageSelector = () => {
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute top-8 right-8 p-3 rounded-full bg-white/5 hover:bg-white hover:text-black transition-all border border-white/10"
+                className="absolute top-0 right-0 p-2 m-8 hover:cursor-pointer rounded-full text-foreground hover:text-primary transition-colors z-120 group bg-zinc-200"
               >
-                <X size={20} />
+                <X size={20} className="group-hover:rotate-90 transition-transform duration-500 text-zinc-950"/>
               </button>
 
               {/* Smaller Grid */}
@@ -128,8 +128,8 @@ const LanguageSelector = () => {
                     className={`
                       relative group flex items-center justify-between p-6 rounded-2xl border transition-all duration-500
                       ${i18n.language === lang.code 
-                        ? "bg-white text-black border-white" 
-                        : "bg-white/5 text-white border-white/5 hover:bg-white/10 hover:border-white/20"
+                        ? "bg-black text-white border-zinc-900 dark:bg-zinc-300 dark:text-zinc-950" 
+                        : "bg-zinc-200/50 dark:bg-zinc-950 dark:hover:text-zinc-50 dark:hover:bg-zinc-900 dark text-zinc-500 hover:text-zinc-800 border-white/5 hover:bg-white/80 dark:hover:border-zinc-800 hover:border-white/20 "
                       }
                     `}
                   >

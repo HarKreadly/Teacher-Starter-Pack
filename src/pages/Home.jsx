@@ -12,20 +12,20 @@ const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentQuote, setCurrentQuote] = useState(0);
   const [dateTime, setDateTime] = useState(new Date());
-  const [isCVModalOpen, setIsCVModalOpen] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setDateTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Auto-play for carousel
+  // Auto-play for background/quotes
   useEffect(() => {
     const slideTimer = setInterval(() => {
       nextSlide();
+      nextQuote();
     }, autoPlaySpeed);
     return () => clearInterval(slideTimer);
-  }, [currentSlide, autoPlaySpeed]);
+  }, [currentSlide, currentQuote, autoPlaySpeed]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -72,32 +72,23 @@ const Home = () => {
       {/* Main Content Grid */}
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 min-h-dvh pt-32 pb-10 px-4 md:px-8 lg:px-16 gap-8 items-center">
         <HeroControls
-          currentSlide={currentSlide}
-          currentQuote={currentQuote}
-          nextQuote={nextQuote}
-          prevQuote={prevQuote}
           dateTime={dateTime}
           fontSize={fontSize}
           setFontSize={setFontSize}
           autoPlaySpeed={autoPlaySpeed}
           setAutoPlaySpeed={setAutoPlaySpeed}
-          nextSlide={nextSlide}
-          prevSlide={prevSlide}
         />
 
         <HeroCarousel
+          currentQuote={currentQuote}
+          nextQuote={nextQuote}
+          prevQuote={prevQuote}
+          fontSize={fontSize}
           currentSlide={currentSlide}
-          nextSlide={nextSlide}
-          prevSlide={prevSlide}
-          setIsCVModalOpen={setIsCVModalOpen}
-          slides={slides}
         />
 
         <HeroInfo
-          currentSlide={currentSlide}
           dateTime={dateTime}
-          fontSize={fontSize}
-          slides={slides}
         />
       </div>
     </div>
@@ -105,3 +96,4 @@ const Home = () => {
 };
 
 export default Home;
+

@@ -90,11 +90,11 @@ const MenuModal = ({ isOpen, onClose }) => {
             {/* Top Corner Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-0 left-0 p-2 m-8 hover:cursor-pointer bg-white rounded-full text-foreground hover:text-primary transition-colors z-120 group"
+              className="absolute top-0 left-0 p-2 m-8 hover:cursor-pointer rounded-full text-foreground hover:text-primary transition-colors z-120 group bg-zinc-100"
             >
               <FiX
                 size={22}
-                className="group-hover:rotate-90 transition-transform duration-500"
+                className="group-hover:rotate-90 transition-transform duration-500 text-zinc-950"
               />
             </button>
 

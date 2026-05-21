@@ -1,295 +1,262 @@
-import React from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { FaQuoteLeft, FaQuoteRight } from "react-icons/fa6";
-import { motion, AnimatePresence } from "framer-motion";
-import { slides } from "../../../data/heroSlides";
+import React, { useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { Bell, ArrowUpRight, X, Type, Gauge, List, Clock, CheckCircle2 } from "lucide-react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 
 const HeroControls = ({
-  currentSlide,
-  currentQuote,
-  nextQuote,
-  prevQuote,
-  dateTime,
   fontSize,
   setFontSize,
   autoPlaySpeed,
   setAutoPlaySpeed,
-  nextSlide,
-  prevSlide,
 }) => {
-  const formatDate = (date) => {
-    const day = date.getDate();
-    const month = date.toLocaleString("default", { month: "long" });
-    const year = date.getFullYear();
-    return { day, month, year };
-  };
+  const [expanded, setExpanded] = useState(false);
+  const [activeVersionId, setActiveVersionId] = useState("v1.2");
+  const overlayRef = useRef(null);
+  const contentRef = useRef(null);
 
-  const formatTime = (date) => {
-    let hours = date.getHours();
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    const hoursStr = hours.toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const seconds = date.getSeconds().toString().padStart(2, "0");
-    return { hours: hoursStr, minutes, seconds, ampm };
-  };
+  const versions = [
+    { 
+      id: "v1.2",
+      title: "Major UI Overhaul & Performance Boost",
+      date: "May 14, 2026",
+      desc: "We've completely redesigned the home dashboard for a more cinematic and immersive experience. New GSAP animations ensure everything feels incredibly smooth. The new 'What's New' feature keeps you updated on all the latest tools we add for teachers.",
+      features: ["Cinematic Dashboard", "GSAP Expanding Modals", "Minimalist Zinc Nav Style"]
+    },
+    { 
+      id: "v1.1",
+      title: "Gradebook & Visual Analytics",
+      date: "April 28, 2026",
+      desc: "An intuitive new interface for managing student grades with visual analytics. Track performance over time with beautiful, interactive charts.",
+      features: ["Visual Analytics Dashboard", "Grade Tracking System", "One-click CSV Export"]
+    },
+    { 
+      id: "v1.0",
+      title: "Initial Teacher Starter Pack Launch",
+      date: "April 1, 2026",
+      desc: "The very first version of Teacher Starter Pack. Includes core functionalities designed specifically to save teachers time and energy.",
+      features: ["Lesson Planner Module", "Schedule Manager", "Basic Student Roster"]
+    }
+  ];
 
-  const { day, month, year } = formatDate(dateTime);
-  const { hours, minutes, ampm } = formatTime(dateTime);
+  const activeVersion = versions.find(v => v.id === activeVersionId) || versions[0];
 
-  const fontSizes = {
-    sm: {
-      title: "text-6xl md:text-9xl",
-      text: "text-sm",
-      quote: "text-xs",
-    },
-    md: {
-      title: "text-8xl md:text-[10rem]",
-      text: "text-base",
-      quote: "text-sm",
-    },
-    lg: {
-      title: "text-9xl md:text-[12rem]",
-      text: "text-lg",
-      quote: "text-base",
-    },
-  };
+  useGSAP(() => {
+    if (expanded) {
+      gsap.to(overlayRef.current, {
+        duration: 0.6,
+        autoAlpha: 1,
+        ease: "expo.inOut"
+      });
+      gsap.fromTo(".expanded-item", 
+        { opacity: 0, y: 30 }, 
+        { opacity: 1, y: 0, duration: 0.6, delay: 0.2, stagger: 0.05, ease: "expo.out" }
+      );
+    } else {
+      gsap.to(overlayRef.current, {
+        duration: 0.5,
+        autoAlpha: 0,
+        ease: "expo.inOut"
+      });
+    }
+  }, [expanded]);
+
+  // Animate content change when activeVersionId changes
+  useGSAP(() => {
+    if (expanded && contentRef.current) {
+      gsap.fromTo(contentRef.current, 
+        { opacity: 0, x: -20 }, 
+        { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }
+      );
+    }
+  }, [activeVersionId, expanded]);
 
   return (
-    <div className="lg:col-span-3 flex flex-col h-full py-6 lg:py-12 order-3 lg:order-1 px-4 md:px-8 lg:pl-8 relative z-40 items-center lg:items-start gap-8">
-      {/* Speed & Size Controls - Desktop Only */}
-      <div className="mb-auto hidden lg:flex lg:flex-col lg:gap-20">
-        {/* Speed */}
-        <div>
-          <span className="block text-xs font-bold tracking-widest text-gray-900 dark:text-white mb-4 uppercase">
-            Speed
-          </span>
-          <div className="text-sm tracking-[0.5em] text-gray-500 dark:text-gray-500 font-light flex gap-4">
+    <div className="lg:col-span-3 flex flex-col h-full py-6 lg:py-12 order-3 lg:order-1 px-4 md:px-8 lg:pl-8 relative z-40">
+      
+      {/* Wrapper to push everything to the bottom */}
+      <div className="mt-auto flex flex-col gap-4 w-full max-w-[280px] mx-auto lg:mx-0">
+        
+        {/* Speed Card */}
+        <div className="w-full backdrop-blur-md bg-white/30 dark:bg-black/40 rounded-sm p-4 border border-white/40 dark:border-white/10 shadow-lg">
+          <div className="flex items-center gap-2 mb-3">
+            <Gauge className="text-gray-900 dark:text-white" size={16} />
+            <h3 className="text-[10px] font-semibold tracking-widest text-gray-900 dark:text-white uppercase">
+              Rotation Speed
+            </h3>
+          </div>
+          <div className="flex gap-2">
             {[12, 8, 6, 4].map((num) => (
               <button
                 key={num}
                 onClick={() => setAutoPlaySpeed(num * 1000)}
-                className={`transition-colors hover:text-black dark:hover:text-white ${
+                className={`flex-1 py-1.5 rounded-sm text-xs font-bold transition-all duration-300 ${
                   autoPlaySpeed === num * 1000
-                    ? "text-black dark:text-white font-bold"
-                    : ""
+                    ? "bg-black text-white shadow-md scale-105"
+                    : "bg-white/50 dark:bg-black/50 text-gray-800 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/20"
                 }`}
               >
-                {num}
+                {num}s
               </button>
             ))}
           </div>
         </div>
 
-        {/* Size */}
-        <div className="flex flex-col gap-4">
-          <span className="block text-xs font-bold tracking-widest text-gray-900 dark:text-white uppercase">
-            Size
-          </span>
-          <div className="flex gap-6">
-            <div className="w-[1px] h-32 bg-gray-300 dark:bg-gray-700"></div>
-            <div className="flex flex-col justify-between h-32 font-serif">
+        {/* Size Card */}
+        <div className="w-full backdrop-blur-md bg-white/30 dark:bg-black/40 rounded-sm p-4 border border-white/40 dark:border-white/10 shadow-lg">
+          <div className="flex items-center gap-2 mb-3">
+            <Type className="text-gray-900 dark:text-white" size={16} />
+            <h3 className="text-[10px] font-semibold tracking-widest text-gray-900 dark:text-white uppercase">
+              Text Size
+            </h3>
+          </div>
+          <div className="flex gap-2">
+            {[
+              { id: "sm", label: "A", sizeClass: "text-xs" },
+              { id: "md", label: "A", sizeClass: "text-sm" },
+              { id: "lg", label: "A", sizeClass: "text-base" },
+            ].map((sizeObj) => (
               <button
-                onClick={() => setFontSize("lg")}
-                className={`text-5xl leading-none transition-colors ${
-                  fontSize === "lg"
-                    ? "text-gray-900 dark:text-white font-normal"
-                    : "text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white font-light"
+                key={sizeObj.id}
+                onClick={() => setFontSize(sizeObj.id)}
+                className={`flex-1 py-1.5 rounded-sm font-serif transition-all duration-300 ${sizeObj.sizeClass} ${
+                  fontSize === sizeObj.id
+                    ? "bg-black text-white shadow-md scale-105"
+                    : "bg-white/50 dark:bg-black/50 text-gray-800 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/20"
                 }`}
               >
-                A
+                {sizeObj.label}
               </button>
-              <button
-                onClick={() => setFontSize("md")}
-                className={`text-3xl leading-none transition-colors ${
-                  fontSize === "md"
-                    ? "text-gray-900 dark:text-white font-normal"
-                    : "text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white font-light"
-                }`}
-              >
-                A
-              </button>
-              <button
-                onClick={() => setFontSize("sm")}
-                className={`text-xl leading-none transition-colors ${
-                  fontSize === "sm"
-                    ? "text-gray-900 dark:text-white font-normal"
-                    : "text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white font-light"
-                }`}
-              >
-                A
-              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* What's New Card */}
+        <div 
+          onClick={() => setExpanded(true)}
+          className="w-full backdrop-blur-md bg-white/30 dark:bg-black/40 rounded-sm p-5 border border-white/40 dark:border-white/10 shadow-lg cursor-pointer hover:bg-white/40 dark:hover:bg-black/50 transition-colors duration-300 group"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-bold tracking-widest text-gray-900 dark:text-white uppercase">
+              What's New!
+            </h3>
+            <ArrowUpRight size={14} className="text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </div>
+
+          <div className="flex flex-col">
+            <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider mb-1">
+              {versions[0].date}
+            </span>
+            <span className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
+              {versions[0].title}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Expanded Full Screen Overlay (GSAP) via Portal */}
+      {createPortal(
+        <div 
+          ref={overlayRef} 
+          className="fixed inset-0 z-[99999] invisible opacity-0 bg-gray-50 dark:bg-[#09090b] flex flex-col overflow-hidden"
+        >
+          {/* Header / Nav */}
+          <div className="expanded-item w-full px-6 py-6 border-b border-gray-200 dark:border-white/10 flex justify-between items-center bg-white/50 dark:bg-black/50 backdrop-blur-md sticky top-0 z-50">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-gray-100 dark:bg-white/10">
+                <Bell className="text-gray-900 dark:text-white" size={20} />
+              </div>
+              <span className="text-sm font-bold tracking-widest uppercase text-gray-900 dark:text-white">
+                Release Notes
+              </span>
+            </div>
+
+            <div 
+              className="flex gap-3 items-center cursor-pointer group"
+              onClick={() => setExpanded(false)}
+            >
+              <span className="text-gray-900 dark:text-white font-sans uppercase text-xs font-bold tracking-widest group-hover:opacity-70 transition-opacity">
+                Close
+              </span>
+              <div className="p-2 rounded-full bg-gray-100 dark:bg-white/10 group-hover:bg-gray-200 dark:group-hover:bg-white/20 transition-colors">
+                <X size={20} className="text-gray-900 dark:text-white" />
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Speed & Size Controls - Mobile/Tablet/Small Laptop */}
-      <div className="lg:hidden w-full flex gap-4">
-        {/* Speed */}
-        <div className="flex-1 backdrop-blur-sm bg-gray-100/30 dark:bg-white/5 rounded-lg p-4 flex flex-col items-center gap-3">
-          <span className="block text-xs font-bold tracking-widest text-gray-900 dark:text-white uppercase">
-            Speed
-          </span>
-          <div className="text-sm tracking-[0.3em] text-gray-500 dark:text-gray-500 font-light flex gap-3 justify-center">
-            {[12, 8, 6, 4].map((num) => (
-              <button
-                key={num}
-                onClick={() => setAutoPlaySpeed(num * 1000)}
-                className={`transition-colors hover:text-black dark:hover:text-white ${
-                  autoPlaySpeed === num * 1000
-                    ? "text-black dark:text-white font-bold"
-                    : ""
-                }`}
-              >
-                {num}
-              </button>
-            ))}
+          {/* Main Content Grid */}
+          <div className="flex-1 flex flex-col md:flex-row w-full max-w-7xl mx-auto h-full overflow-hidden">
+            
+            {/* Sidebar: Versions Nav */}
+            <div className="expanded-item w-full md:w-64 lg:w-80 border-r border-gray-200 dark:border-white/10 p-6 md:p-8 overflow-y-auto custom-scrollbar flex flex-col gap-4">
+              <h4 className="text-[10px] font-bold tracking-widest text-gray-500 dark:text-gray-400 uppercase mb-2">
+                Versions
+              </h4>
+              {versions.map((v) => (
+                <div 
+                  key={v.id}
+                  onClick={() => setActiveVersionId(v.id)}
+                  className="flex items-center gap-3 cursor-pointer group"
+                >
+                  <div className={`p-2 rounded-full transition-colors ${
+                    activeVersionId === v.id 
+                      ? "bg-gray-900 text-white dark:bg-white dark:text-black shadow-md"
+                      : "bg-gray-100 text-gray-500 dark:bg-white/5 dark:text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-white/10"
+                  }`}>
+                    <List size={16} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className={`text-xs font-bold tracking-widest uppercase transition-colors ${
+                      activeVersionId === v.id ? "text-gray-900 dark:text-white" : "text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                    }`}>
+                      {v.id}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Main Area: Active Version Details */}
+            <div className="expanded-item flex-1 p-6 md:p-12 lg:p-16 overflow-y-auto custom-scrollbar relative">
+              <div ref={contentRef} className="max-w-3xl mx-auto flex flex-col">
+                
+                <div className="flex items-center gap-3 mb-6">
+                  <Clock size={16} className="text-gray-500 dark:text-gray-400" />
+                  <span className="text-xs font-semibold tracking-widest text-gray-500 dark:text-gray-400 uppercase">
+                    {activeVersion.date}
+                  </span>
+                </div>
+
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-gray-900 dark:text-white mb-8 leading-tight">
+                  {activeVersion.title}
+                </h1>
+
+                <div className="prose prose-gray dark:prose-invert max-w-none">
+                  <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
+                    {activeVersion.desc}
+                  </p>
+
+                  <h3 className="text-sm font-bold tracking-widest text-gray-900 dark:text-white uppercase mb-6 flex items-center gap-2">
+                    <Bell size={16} /> Key Features
+                  </h3>
+                  
+                  <ul className="flex flex-col gap-4">
+                    {activeVersion.features.map((feature, i) => (
+                      <li key={i} className="flex items-center gap-4 text-gray-700 dark:text-gray-300">
+                        <CheckCircle2 size={18} className="text-gray-900 dark:text-white" />
+                        <span className="text-base">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+              </div>
+            </div>
           </div>
-        </div>
+        </div>,
+        document.body
+      )}
 
-        {/* Size */}
-        <div className="flex-1 backdrop-blur-sm bg-gray-100/30 dark:bg-white/5 rounded-lg p-4 flex flex-col items-center gap-3">
-          <span className="block text-xs font-bold tracking-widest text-gray-900 dark:text-white uppercase">
-            Size
-          </span>
-          <div className="flex gap-4 items-end justify-center">
-            <button
-              onClick={() => setFontSize("lg")}
-              className={`text-3xl leading-none transition-colors ${
-                fontSize === "lg"
-                  ? "text-gray-900 dark:text-white font-normal"
-                  : "text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white font-light"
-              }`}
-            >
-              A
-            </button>
-            <button
-              onClick={() => setFontSize("md")}
-              className={`text-2xl leading-none transition-colors ${
-                fontSize === "md"
-                  ? "text-gray-900 dark:text-white font-normal"
-                  : "text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white font-light"
-              }`}
-            >
-              A
-            </button>
-            <button
-              onClick={() => setFontSize("sm")}
-              className={`text-lg leading-none transition-colors ${
-                fontSize === "sm"
-                  ? "text-gray-900 dark:text-white font-normal"
-                  : "text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white font-light"
-              }`}
-            >
-              A
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation Buttons - Desktop Only */}
-      <div className="hidden lg:flex lg:flex-col gap-6">
-        <button
-          onClick={prevSlide}
-          className="w-14 h-14 rounded-full bg-gray-200/50 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center text-gray-900 dark:text-white hover:bg-gray-300/50 dark:hover:bg-white/20 transition-all duration-300 group"
-        >
-          <ArrowLeft
-            size={20}
-            className="group-hover:-translate-x-1 transition-transform"
-          />
-        </button>
-        <button
-          onClick={nextSlide}
-          className="w-14 h-14 ml-4 rounded-full bg-gray-900 text-white dark:bg-white dark:text-black flex items-center justify-center hover:scale-110 transition-transform duration-300 shadow-lg"
-        >
-          <ArrowRight size={20} />
-        </button>
-      </div>
-
-      {/* Date & Time - Mobile/Tablet/Small Laptop */}
-      <div className="lg:hidden w-full backdrop-blur-sm bg-gray-100/30 dark:bg-white/5 rounded-lg p-6 flex flex-col gap-6">
-        {/* Date */}
-        <div className="flex flex-col gap-2">
-          <span className="text-xs font-bold tracking-widest text-gray-900 dark:text-white uppercase text-center">
-            Date
-          </span>
-          <div className="text-2xl font-serif text-center">
-            <span className="font-normal text-gray-900 dark:text-white">
-              {day}
-            </span>{" "}
-            <span className="text-gray-500 dark:text-gray-400 font-light">
-              of
-            </span>{" "}
-            {month}
-            <span className="text-base text-gray-900 dark:text-white font-normal ml-2">
-              {year}
-            </span>
-          </div>
-        </div>
-
-        {/* Time */}
-        <div className="flex flex-col gap-2">
-          <span className="text-xs font-bold tracking-widest text-gray-900 dark:text-white uppercase text-center">
-            Time
-          </span>
-          <div className="text-center">
-            <span className="text-3xl font-light text-gray-900 dark:text-white tracking-tighter flex items-baseline gap-2 justify-center">
-              <span>
-                <span className="font-bold">{hours}</span>:{minutes}
-              </span>
-              <span className="text-xl text-gray-500 dark:text-gray-400 font-normal">
-                {ampm}
-              </span>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Quote & Navigation */}
-      <div className="mt-auto w-full flex flex-col items-center lg:items-start text-center lg:text-left">
-        <div className="flex flex-col items-center lg:items-start gap-6 mb-8">
-          <div className="flex gap-4">
-            <button
-              onClick={prevQuote}
-              className="text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              <ArrowLeft size={20} />
-            </button>
-            <button
-              onClick={nextQuote}
-              className="text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              <ArrowRight size={20} />
-            </button>
-          </div>
-        </div>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentQuote}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.5 }}
-            className="relative pt-8 pb-8 px-6 backdrop-blur-sm bg-gray-100/30 dark:bg-white/5 rounded-lg w-full lg:w-auto"
-          >
-            <FaQuoteLeft
-              className="absolute top-2 left-2 text-gray-400 dark:text-gray-500 opacity-60"
-              size={24}
-            />
-            <p
-              className={`${fontSizes[fontSize].quote} text-gray-600 dark:text-gray-400 leading-relaxed text-center lg:text-left`}
-            >
-              {slides[currentQuote].quote}
-            </p>
-            <FaQuoteRight
-              className="absolute bottom-2 right-2 text-gray-400 dark:text-gray-500 opacity-60"
-              size={24}
-            />
-          </motion.div>
-        </AnimatePresence>
-      </div>
     </div>
   );
 };
