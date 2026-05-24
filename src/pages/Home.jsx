@@ -7,8 +7,14 @@ import { useSettings } from "../context/SettingsContext";
 import { slides } from "../data/heroSlides";
 
 const Home = () => {
-  const { fontSize, setFontSize, autoPlaySpeed, setAutoPlaySpeed } =
-    useSettings();
+  const { 
+    fontSize, setFontSize, 
+    autoPlaySpeed, setAutoPlaySpeed,
+    widgetsEnabled,
+    showRotationSpeed, showTextSizeWidget, showWhatsNew,
+    showTime, showDate
+  } = useSettings();
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentQuote, setCurrentQuote] = useState(0);
   const [dateTime, setDateTime] = useState(new Date());
@@ -42,6 +48,18 @@ const Home = () => {
   const prevQuote = () => {
     setCurrentQuote((prev) => (prev - 1 + slides.length) % slides.length);
   };
+
+  const isLeftVisible = widgetsEnabled && (showRotationSpeed || showTextSizeWidget || showWhatsNew);
+  const isRightVisible = widgetsEnabled && (showTime || showDate);
+
+  let colSpanClass = "lg:col-span-6";
+  if (!isLeftVisible && !isRightVisible) {
+    colSpanClass = "lg:col-span-12 max-w-4xl mx-auto";
+  } else if (!isLeftVisible && isRightVisible) {
+    colSpanClass = "lg:col-span-9 lg:col-start-1";
+  } else if (isLeftVisible && !isRightVisible) {
+    colSpanClass = "lg:col-span-9 lg:col-start-4";
+  }
 
   return (
     <div className="relative w-full min-h-dvh bg-gray-50 dark:bg-black text-gray-900 dark:text-white overflow-hidden font-serif transition-colors duration-1000">
@@ -85,6 +103,7 @@ const Home = () => {
           prevQuote={prevQuote}
           fontSize={fontSize}
           currentSlide={currentSlide}
+          className={colSpanClass}
         />
 
         <HeroInfo

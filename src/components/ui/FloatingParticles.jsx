@@ -1,7 +1,13 @@
 import React, { useEffect, useRef } from 'react';
+import { useTheme } from 'next-themes';
 
-const FloatingParticles = ({ count = 60, color = 'white', opacity = 0.4 }) => {
+const FloatingParticles = ({ count = 60, opacity = 0.4 }) => {
   const canvasRef = useRef(null);
+  const { resolvedTheme } = useTheme();
+  
+  const isDark = resolvedTheme === 'dark';
+  const color = isDark ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.35)';
+  const mixBlendMode = isDark ? 'screen' : 'multiply';
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -92,7 +98,7 @@ const FloatingParticles = ({ count = 60, color = 'white', opacity = 0.4 }) => {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-1"
-      style={{ mixBlendMode: 'screen' }}
+      style={{ mixBlendMode }}
     />
   );
 };

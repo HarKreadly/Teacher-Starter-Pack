@@ -1,13 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Menu, Sun, Moon, Settings, ChevronDown } from "lucide-react";
 import { useTheme } from "next-themes";
 import LanguageSelector from "../common/LanguageSelector";
 import MenuModal from "./MenuModal";
+import SettingsModal from "./SettingsModal";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [renderDropdown, setRenderDropdown] = useState(null);
+  const dropdownRef = useRef(null);
 
   const navItems = [
     { name: "Home", link: "/" },
@@ -46,9 +53,67 @@ const Navbar = () => {
     { name: "Contact", link: "/contact" },
   ];
 
+  useEffect(() => {
+    const item = navItems.find((i) => i.name === activeDropdown);
+    if (item && item.dropdown) {
+      setRenderDropdown(item);
+    }
+  }, [activeDropdown]);
+
+  useGSAP(() => {
+    const item = navItems.find((i) => i.name === activeDropdown);
+    const hasDropdown = item && item.dropdown;
+
+    if (hasDropdown) {
+      gsap.to(dropdownRef.current, {
+        height: "auto",
+        duration: 0.7,
+        ease: "expo.inOut",
+        overwrite: "auto"
+      });
+      gsap.fromTo(".dropdown-item", 
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: "power2.out", delay: 0.2, overwrite: "auto" }
+      );
+    } else {
+      gsap.to(dropdownRef.current, {
+        height: 0,
+        duration: 0.5,
+        ease: "expo.inOut",
+        overwrite: "auto"
+      });
+      gsap.to(".dropdown-item", { opacity: 0, y: -10, duration: 0.2, overwrite: "auto" });
+    }
+  }, [activeDropdown]);
+
   return (
     <>
-      <nav className="absolute top-0 left-0 w-full p-4 md:p-8 flex justify-between items-center z-50 text-sm tracking-widest text-gray-400 bg-transparent">
+      <nav 
+        className="absolute top-0 left-0 w-full p-4 md:p-8 flex justify-between items-center z-50 text-sm tracking-widest text-gray-400 bg-transparent"
+        onMouseLeave={() => setActiveDropdown(null)}
+      >
+        {/* Global GSAP Dropdown Background */}
+        <div 
+          ref={dropdownRef}
+          className="fixed top-0 left-0 w-full bg-white/95 dark:bg-[#09090b]/95 backdrop-blur-3xl overflow-hidden -z-10 shadow-2xl border-b border-gray-200 dark:border-white/10"
+          style={{ height: 0 }}
+        >
+          <div className="w-full max-w-6xl mx-auto px-8 lg:px-16 pt-[100px] pb-8">
+            <div className="grid grid-cols-4 gap-4">
+              {renderDropdown?.dropdown?.map((dropItem, idx) => (
+                <Link 
+                  key={`${renderDropdown.name}-${idx}`}
+                  to={dropItem.link}
+                  className="dropdown-item flex flex-col gap-1 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors group/item"
+                >
+                  <span className="text-gray-900 dark:text-white font-bold text-lg tracking-wide group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">{dropItem.title}</span>
+                  <span className="text-gray-500 dark:text-gray-400 font-normal text-xs tracking-normal normal-case leading-relaxed">{dropItem.desc}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
         <div className="flex items-center gap-8">
           <div
             className="flex gap-3 items-center cursor-pointer group"
@@ -79,36 +144,25 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className="hidden lg:flex gap-8 xl:gap-12 font-sans uppercase text-xs font-bold">
+        <div className="hidden lg:flex gap-8 xl:gap-12 font-sans uppercase text-xs font-bold relative">
           {navItems.map((item) => (
-            <div key={item.name} className="relative group py-4">
+            <div 
+              key={item.name} 
+              className="py-4 cursor-pointer"
+              onMouseEnter={() => setActiveDropdown(item.name)}
+            >
               <Link
                 to={item.link}
                 className="flex items-center gap-1 text-gray-900 dark:text-white hover:opacity-70 transition-all"
               >
                 {item.name}
-                {item.dropdown && <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-300" />}
+                {item.dropdown && (
+                  <ChevronDown 
+                    size={14} 
+                    className={`transition-transform duration-500 ${activeDropdown === item.name ? "rotate-180" : ""}`} 
+                  />
+                )}
               </Link>
-
-              {/* Wide Dropdown Menu */}
-              {item.dropdown && (
-                <div className="absolute top-[100%] left-1/2 -translate-x-1/2 mt-2 w-[480px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-4 z-50">
-                  <div className="backdrop-blur-2xl bg-white/90 dark:bg-[#09090b]/90 rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 p-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      {item.dropdown.map((dropItem, idx) => (
-                        <Link 
-                          key={idx}
-                          to={dropItem.link}
-                          className="flex flex-col gap-1 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-colors group/item"
-                        >
-                          <span className="text-gray-900 dark:text-white font-bold text-sm tracking-wide group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400 transition-colors">{dropItem.title}</span>
-                          <span className="text-gray-500 dark:text-gray-400 font-normal text-xs tracking-normal normal-case leading-snug">{dropItem.desc}</span>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           ))}
         </div>
@@ -119,7 +173,11 @@ const Navbar = () => {
           <div className="h-6 w-px bg-gray-300 dark:bg-white/20 hidden sm:block"></div>
 
           {/* Settings Button */}
-          <button className="flex items-center justify-center p-2 rounded-full bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 transition-colors group" aria-label="Settings">
+          <button 
+            onClick={() => setIsSettingsModalOpen(true)}
+            className="flex items-center justify-center p-2 rounded-full bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 transition-colors group" 
+            aria-label="Settings"
+          >
             <Settings size={20} className="text-gray-900 dark:text-white group-hover:rotate-90 transition-transform duration-500" />
           </button>
         </div>
@@ -128,6 +186,11 @@ const Navbar = () => {
       <MenuModal
         isOpen={isMenuModalOpen}
         onClose={() => setIsMenuModalOpen(false)}
+      />
+
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
       />
     </>
   );

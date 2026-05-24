@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Bell, ArrowUpRight, X, Type, Gauge, List, Clock, CheckCircle2 } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { useSettings } from "../../../context/SettingsContext";
 
 const HeroControls = ({
   fontSize,
@@ -14,6 +15,8 @@ const HeroControls = ({
   const [activeVersionId, setActiveVersionId] = useState("v1.2");
   const overlayRef = useRef(null);
   const contentRef = useRef(null);
+
+  const { widgetsEnabled, showRotationSpeed, showTextSizeWidget, showWhatsNew } = useSettings();
 
   const versions = [
     { 
@@ -71,6 +74,12 @@ const HeroControls = ({
     }
   }, [activeVersionId, expanded]);
 
+  const speedVisible = widgetsEnabled && showRotationSpeed;
+  const sizeVisible = widgetsEnabled && showTextSizeWidget;
+  const whatsNewVisible = widgetsEnabled && showWhatsNew;
+
+  if (!speedVisible && !sizeVisible && !whatsNewVisible) return null;
+
   return (
     <div className="lg:col-span-3 flex flex-col h-full py-6 lg:py-12 order-3 lg:order-1 px-4 md:px-8 lg:pl-8 relative z-40">
       
@@ -78,80 +87,86 @@ const HeroControls = ({
       <div className="mt-auto flex flex-col gap-4 w-full max-w-[280px] mx-auto lg:mx-0">
         
         {/* Speed Card */}
-        <div className="w-full backdrop-blur-md bg-white/30 dark:bg-black/40 rounded-sm p-4 border border-white/40 dark:border-white/10 shadow-lg">
-          <div className="flex items-center gap-2 mb-3">
-            <Gauge className="text-gray-900 dark:text-white" size={16} />
-            <h3 className="text-[10px] font-semibold tracking-widest text-gray-900 dark:text-white uppercase">
-              Rotation Speed
-            </h3>
+        {speedVisible && (
+          <div className="w-full backdrop-blur-md bg-white/30 dark:bg-black/40 rounded-sm p-4 border border-white/40 dark:border-white/10 shadow-lg">
+            <div className="flex items-center gap-2 mb-3">
+              <Gauge className="text-gray-900 dark:text-white" size={16} />
+              <h3 className="text-[10px] font-semibold tracking-widest text-gray-900 dark:text-white uppercase">
+                Rotation Speed
+              </h3>
+            </div>
+            <div className="flex gap-2">
+              {[12, 8, 6, 4].map((num) => (
+                <button
+                  key={num}
+                  onClick={() => setAutoPlaySpeed(num * 1000)}
+                  className={`flex-1 py-1.5 rounded-sm text-xs font-bold transition-all duration-300 ${
+                    autoPlaySpeed === num * 1000
+                      ? "bg-black text-white shadow-md scale-105"
+                      : "bg-white/50 dark:bg-black/50 text-gray-800 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/20"
+                  }`}
+                >
+                  {num}s
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-2">
-            {[12, 8, 6, 4].map((num) => (
-              <button
-                key={num}
-                onClick={() => setAutoPlaySpeed(num * 1000)}
-                className={`flex-1 py-1.5 rounded-sm text-xs font-bold transition-all duration-300 ${
-                  autoPlaySpeed === num * 1000
-                    ? "bg-black text-white shadow-md scale-105"
-                    : "bg-white/50 dark:bg-black/50 text-gray-800 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/20"
-                }`}
-              >
-                {num}s
-              </button>
-            ))}
-          </div>
-        </div>
+        )}
 
         {/* Size Card */}
-        <div className="w-full backdrop-blur-md bg-white/30 dark:bg-black/40 rounded-sm p-4 border border-white/40 dark:border-white/10 shadow-lg">
-          <div className="flex items-center gap-2 mb-3">
-            <Type className="text-gray-900 dark:text-white" size={16} />
-            <h3 className="text-[10px] font-semibold tracking-widest text-gray-900 dark:text-white uppercase">
-              Text Size
-            </h3>
+        {sizeVisible && (
+          <div className="w-full backdrop-blur-md bg-white/30 dark:bg-black/40 rounded-sm p-4 border border-white/40 dark:border-white/10 shadow-lg">
+            <div className="flex items-center gap-2 mb-3">
+              <Type className="text-gray-900 dark:text-white" size={16} />
+              <h3 className="text-[10px] font-semibold tracking-widest text-gray-900 dark:text-white uppercase">
+                Text Size
+              </h3>
+            </div>
+            <div className="flex gap-2">
+              {[
+                { id: "sm", label: "A", sizeClass: "text-xs" },
+                { id: "md", label: "A", sizeClass: "text-sm" },
+                { id: "lg", label: "A", sizeClass: "text-base" },
+              ].map((sizeObj) => (
+                <button
+                  key={sizeObj.id}
+                  onClick={() => setFontSize(sizeObj.id)}
+                  className={`flex-1 py-1.5 rounded-sm font-serif transition-all duration-300 ${sizeObj.sizeClass} ${
+                    fontSize === sizeObj.id
+                      ? "bg-black text-white shadow-md scale-105"
+                      : "bg-white/50 dark:bg-black/50 text-gray-800 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/20"
+                  }`}
+                >
+                  {sizeObj.label}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-2">
-            {[
-              { id: "sm", label: "A", sizeClass: "text-xs" },
-              { id: "md", label: "A", sizeClass: "text-sm" },
-              { id: "lg", label: "A", sizeClass: "text-base" },
-            ].map((sizeObj) => (
-              <button
-                key={sizeObj.id}
-                onClick={() => setFontSize(sizeObj.id)}
-                className={`flex-1 py-1.5 rounded-sm font-serif transition-all duration-300 ${sizeObj.sizeClass} ${
-                  fontSize === sizeObj.id
-                    ? "bg-black text-white shadow-md scale-105"
-                    : "bg-white/50 dark:bg-black/50 text-gray-800 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-white/20"
-                }`}
-              >
-                {sizeObj.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        )}
 
         {/* What's New Card */}
-        <div 
-          onClick={() => setExpanded(true)}
-          className="w-full backdrop-blur-md bg-white/30 dark:bg-black/40 rounded-sm p-5 border border-white/40 dark:border-white/10 shadow-lg cursor-pointer hover:bg-white/40 dark:hover:bg-black/50 transition-colors duration-300 group"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-bold tracking-widest text-gray-900 dark:text-white uppercase">
-              What's New!
-            </h3>
-            <ArrowUpRight size={14} className="text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </div>
+        {whatsNewVisible && (
+          <div 
+            onClick={() => setExpanded(true)}
+            className="w-full backdrop-blur-md bg-white/30 dark:bg-black/40 rounded-sm p-5 border border-white/40 dark:border-white/10 shadow-lg cursor-pointer hover:bg-white/40 dark:hover:bg-black/50 transition-colors duration-300 group"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-bold tracking-widest text-gray-900 dark:text-white uppercase">
+                What's New!
+              </h3>
+              <ArrowUpRight size={14} className="text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </div>
 
-          <div className="flex flex-col">
-            <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider mb-1">
-              {versions[0].date}
-            </span>
-            <span className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
-              {versions[0].title}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider mb-1">
+                {versions[0].date}
+              </span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-white leading-tight">
+                {versions[0].title}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Expanded Full Screen Overlay (GSAP) via Portal */}

@@ -28,7 +28,7 @@ export const SettingsProvider = ({ children }) => {
 
   const [scanlines, setScanlines] = useState(() => {
     const saved = localStorage.getItem("harkreadly_scanlines");
-    return saved !== null ? JSON.parse(saved) : false;
+    return saved !== null ? JSON.parse(saved) : true; // Film grain default true
   });
 
   const [monochrome, setMonochrome] = useState(() => {
@@ -52,8 +52,65 @@ export const SettingsProvider = ({ children }) => {
   });
 
   const [fontSize, setFontSize] = useState(() => {
-    const saved = localStorage.getItem("harkreadly_fontsize");
-    return saved !== null ? saved : "md";
+    try {
+      const saved = localStorage.getItem("harkreadly_fontsize");
+      if (saved === null) return 16;
+      const parsed = JSON.parse(saved);
+      // Guard against old string values like "md"
+      return typeof parsed === "number" ? parsed : 16;
+    } catch {
+      return 16;
+    }
+  });
+
+  const [backdropBlur, setBackdropBlur] = useState(() => {
+    const saved = localStorage.getItem("harkreadly_backdropblur");
+    return saved !== null ? JSON.parse(saved) : 60;
+  });
+
+  const [widgetsEnabled, setWidgetsEnabled] = useState(() => {
+    const saved = localStorage.getItem("harkreadly_widgets");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  const [showTime, setShowTime] = useState(() => {
+    const saved = localStorage.getItem("harkreadly_showtime");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  const [showDate, setShowDate] = useState(() => {
+    const saved = localStorage.getItem("harkreadly_showdate");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  const [showQuotation, setShowQuotation] = useState(() => {
+    const saved = localStorage.getItem("harkreadly_showquotation");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  const [showSearchBar, setShowSearchBar] = useState(() => {
+    const saved = localStorage.getItem("harkreadly_showsearchbar");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  const [showQuickLinks, setShowQuickLinks] = useState(() => {
+    const saved = localStorage.getItem("harkreadly_showquicklinks");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  const [showRotationSpeed, setShowRotationSpeed] = useState(() => {
+    const saved = localStorage.getItem("harkreadly_showrotationspeed");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  const [showTextSizeWidget, setShowTextSizeWidget] = useState(() => {
+    const saved = localStorage.getItem("harkreadly_showtextsizewidget");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  const [showWhatsNew, setShowWhatsNew] = useState(() => {
+    const saved = localStorage.getItem("harkreadly_showwhatsnew");
+    return saved !== null ? JSON.parse(saved) : true;
   });
 
   // --- Persistence Effect ---
@@ -67,11 +124,23 @@ export const SettingsProvider = ({ children }) => {
     localStorage.setItem("harkreadly_performance", JSON.stringify(performanceMode));
     localStorage.setItem("harkreadly_smoothscroll", JSON.stringify(smoothScroll));
     localStorage.setItem("harkreadly_autoplay", JSON.stringify(autoPlaySpeed));
-    localStorage.setItem("harkreadly_fontsize", fontSize);
+    localStorage.setItem("harkreadly_fontsize", JSON.stringify(fontSize));
+    localStorage.setItem("harkreadly_backdropblur", JSON.stringify(backdropBlur));
+    localStorage.setItem("harkreadly_widgets", JSON.stringify(widgetsEnabled));
+    localStorage.setItem("harkreadly_showtime", JSON.stringify(showTime));
+    localStorage.setItem("harkreadly_showdate", JSON.stringify(showDate));
+    localStorage.setItem("harkreadly_showquotation", JSON.stringify(showQuotation));
+    localStorage.setItem("harkreadly_showsearchbar", JSON.stringify(showSearchBar));
+    localStorage.setItem("harkreadly_showquicklinks", JSON.stringify(showQuickLinks));
+    localStorage.setItem("harkreadly_showrotationspeed", JSON.stringify(showRotationSpeed));
+    localStorage.setItem("harkreadly_showtextsizewidget", JSON.stringify(showTextSizeWidget));
+    localStorage.setItem("harkreadly_showwhatsnew", JSON.stringify(showWhatsNew));
   }, [
     cursorEnabled, animationsEnabled, sparksEnabled, floatingParticles, 
     scanlines, monochrome, performanceMode, smoothScroll, 
-    autoPlaySpeed, fontSize
+    autoPlaySpeed, fontSize, backdropBlur, widgetsEnabled,
+    showTime, showDate, showQuotation, showSearchBar, showQuickLinks,
+    showRotationSpeed, showTextSizeWidget, showWhatsNew
   ]);
 
   return (
@@ -85,7 +154,17 @@ export const SettingsProvider = ({ children }) => {
       performanceMode, setPerformanceMode,
       smoothScroll, setSmoothScroll,
       autoPlaySpeed, setAutoPlaySpeed,
-      fontSize, setFontSize
+      fontSize, setFontSize,
+      backdropBlur, setBackdropBlur,
+      widgetsEnabled, setWidgetsEnabled,
+      showTime, setShowTime,
+      showDate, setShowDate,
+      showQuotation, setShowQuotation,
+      showSearchBar, setShowSearchBar,
+      showQuickLinks, setShowQuickLinks,
+      showRotationSpeed, setShowRotationSpeed,
+      showTextSizeWidget, setShowTextSizeWidget,
+      showWhatsNew, setShowWhatsNew
     }}>
       {children}
     </SettingsContext.Provider>
